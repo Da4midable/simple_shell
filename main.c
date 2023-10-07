@@ -11,7 +11,7 @@
 int main()
 {
 	char *command = NULL, *command_cpy = NULL, *command_path = NULL, **argv = NULL, *tokenized = NULL, *env_tok = NULL;
-	char *delim = " \n", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL, *cmd;
+	char *delim = " ", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL, *cmd;
 	size_t buff_size = 0;
 	ssize_t n_read = 0;
 	int i = 0, argc = 0, fd = STDIN_FILENO;
@@ -61,18 +61,17 @@ while (1)
 			tokenized = _strtok(NULL, delim);
 			argc++;
 		}
+		argv = malloc(sizeof(char *) * (argc + 1));
 		free(command_cpy);
-
+		command_cpy = NULL;
+		
 		command_cpy = _strdup(command);
 
-
 		tokenized = _strtok(command_cpy, delim);
+		free(command);
+		command = NULL;		
 
-		i = 0;
-
-		argv = malloc(sizeof(char *) * (argc + 1));
-
-		if (!argc)
+		if (argv == NULL)
 		{
 			free(argv);
             free(command_cpy);
@@ -87,9 +86,12 @@ while (1)
 			tokenized = _strtok(NULL, delim);
 			i++;
 		}
+		
 			argv[i] = '\0';
-
+		
+		
 		command_path = locate(argv[0]);
+
 		if (command_path)
 		{
 
@@ -107,9 +109,11 @@ while (1)
 					}
                     if (errno == EACCES) {
                         perror("Error:");
+						free(command_path);
                         exit(126);
 					}
                        perror("Error:");
+						free(command_path);
                         exit(127);
         
                 }
@@ -119,16 +123,17 @@ while (1)
 			{
 
 				wait(NULL);
-				free(command_path);
-				command_path = NULL;
-
+				free(argv[0]);
+				argv[0] = NULL;
+				free(argv);
+				argv = NULL;
 				if (!isatty(fd))
 				{
 					sigint_handler(0);
 				}
 			}
 		}
-
+		
 		else if (_strcmp(argv[0], "exit") == 0)
 		{
 			if (!(argv[1]))
@@ -141,7 +146,7 @@ while (1)
 
 		else if (_strcmp(argv[0], "export") == 0)
 		{
-   			env_tok = _strtok(command, " ");
+   			env_tok = _strtok(command_cpy, " ");
 			env_tok = _strtok(NULL, "=");
 			argv[1] = env_tok;
 			env_tok = _strtok(NULL, "=");
@@ -169,7 +174,7 @@ while (1)
 				getcwd(buffer, BUFF_SIZE);
 				setenv("OLDPWD", buffer, 1);
 				chdir(argv[2]);
-
+				printf("%s\n", command_cpy);
 			}
 
 			else if (_strcmp(argv[1], "-") == 0)
@@ -181,7 +186,7 @@ while (1)
 				getcwd(buffer, BUFF_SIZE);
 				setenv("OLDPWD", buffer, 1);
 				chdir(argv[2]);
-
+				printf("%s\n", command_cpy);
 			}
 
 			else
@@ -199,18 +204,12 @@ while (1)
 		}
 
 		else
-		{
-			if (errno == EACCES) {
-                        perror("command");
-                        exit(126);
-                    } else {
-                        perror("command");
-                        exit(127);
-                    }
-			fflush(stdout);
+		{	
+			
+			;
 		
 		}
-	}
-	
+			
+}
 	return (0);
 }
