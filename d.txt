@@ -1,1 +1,0 @@
-"_atoi.c", "_getenv.c", "_isdigit.c", "_memcpy.c", "_putchar.c", "_sigint.c", "_strcmp.c", "_strdup.c", "_strlen.c", "_strstr.c", "_strtok.c", "getlines.c", "join_paths.c", "locate.c", "main.c", "my_exec.c", "realloc.c",

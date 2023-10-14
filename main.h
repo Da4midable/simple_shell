@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdarg.h>
 
 
 #define BUFF_SIZE 1024
@@ -19,12 +20,19 @@
 #define CHUNK_SIZE 128
 #define UNUSED(x) (void)(x)
 
+void _unsetenv(const char *name);
+int _putenv(char *str);
+char *_strchr(char *s, char c);
+char *_strcpy(char *dest, const char *src);
+char *_strcat(char *dest, const char *src);
 void sigint_handler(int sig_num);
-
-
+int set_strncmp(const char *s1, const char *s2, size_t n);
+int _setenv(const char *name, const char *value);
+void custom_concat(char* dest, const char* str1, const char* str2);
+int _dprintf(int fd, const char *format, ...);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 void ffree(char **pp);
-int process_cmd();
+char *process_cmd();
 char *_memset(char *s, char b, unsigned int n);
 char *new_get_line(void);
 char *_memcpy(char *dest, char *src, unsigned int n);

@@ -16,5 +16,4 @@ int _isdigit(char *str)
 		}
 	}
 	return (0);
-
 }
