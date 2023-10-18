@@ -6,9 +6,9 @@
 * Return: void
 */
 
-void sigint_handler(int sig_num)
+void sec_handler(int sig_num)
 {
 	UNUSED(sig_num);
 
-	exit(0);
+	exit(127);
 }

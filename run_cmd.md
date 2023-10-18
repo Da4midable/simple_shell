@@ -5,9 +5,9 @@
 * Return: zero
 */
 
-int main(int argc, char** argv, char **env)
+char *process_cmd(int argc, char** argv)
 {
-	char *command = NULL, *command_cpy = NULL, *command_path = NULL, *tokenized = NULL, *env_tok = NULL, **env_var;
+	char *command = NULL, *command_cpy = NULL, *command_path = NULL, *tokenized = NULL, *env_tok = NULL;
 	char *delim = " \n", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL;
 	size_t buff_size = 0;
 	ssize_t n_read = 0;
@@ -102,7 +102,7 @@ int main(int argc, char** argv, char **env)
 					exit (_atoi(argv[1]));
 				}
 
-					_dprintf(2, "./hsh: %d: %s: Illegal number: %s\n", argc, argv[1]);
+					_dprintf(2, "./hsh: 1: exit: Illegal number: %s\n", argv[1]);
 					exit(2);
 				
 			}
@@ -128,7 +128,6 @@ int main(int argc, char** argv, char **env)
 			{
                 _setenv(argv[1], argv[2]);
             }
-				return(0);
         }
 
 
@@ -137,6 +136,7 @@ int main(int argc, char** argv, char **env)
   			if (argc != 2)
    			{
        			_dprintf(2, "Usage: %s %s\n", argv[0], argv[1]);
+				continue;
     		}
 
     		else
@@ -193,39 +193,34 @@ int main(int argc, char** argv, char **env)
 
 			else
 			{
-				;
+				if (errno == EACCES) {
+                        perror("Error:");
+						
+                        exit(126);
+					}
+                       perror("Error:");
+						
+                        exit(127);
+				sigint_handler(0);
 			}
 		}
-
-		else if (_strcmp(command_cpy, "env") == 0)
-		{
-
-			for (env_var = env; *env_var; env_var++)
-			{
-       			_dprintf(1,"%s\n", *env_var);
-    		}
-			free(command_cpy);
-			free(argv);
-			return(0);
-		}
-
 		else if (fork() == 0)
 		{
-			command_path = locate(argv[0]);
+				command_path = locate(argv[0]);
 
-			execve (command_path, argv, NULL);
-			if (execve (argv[0], argv, NULL) == -1)
-			{
-				if (errno == EACCES)
-				exit(126);
-
-				if (errno == ENOENT)
-				{
-					_dprintf(2, "./hsh: %d: %s: not found\n", argc, argv[0]);
-					exit(127);						
-				}
-        
-			}
+				execve (command_path, argv, environ);
+				if (execve (argv[0], argv, environ) == -1)
+					if (execve (argv[0], argv, environ) == -1) {
+						
+					}
+                    if (errno == EACCES) {
+                        perror("Error:");
+						
+                        exit(126);
+					}
+                       perror("Error:");
+						
+                        exit(127);
         
         }
 			
@@ -234,9 +229,11 @@ int main(int argc, char** argv, char **env)
 		{
 
 			wait(NULL);
-		
+
 			
-				(void)(fd);
+			if (!isatty(fd))
+			{
+				
 				free(command_cpy);
 				free(command_path);
 				command_path = NULL;
@@ -244,7 +241,8 @@ int main(int argc, char** argv, char **env)
 				argv = NULL;
 				sigint_handler(0);
 			
-                       
+			}
+	
 		}
 				
 }

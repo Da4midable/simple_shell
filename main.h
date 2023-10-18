@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdarg.h>
-
+#include <dirent.h>
 
 #define BUFF_SIZE 1024
 #define INITIAL_BUFSIZE 128
@@ -32,7 +32,7 @@ void custom_concat(char* dest, const char* str1, const char* str2);
 int _dprintf(int fd, const char *format, ...);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 void ffree(char **pp);
-char *process_cmd();
+int process_cmd(int argc, char** argv);
 char *_memset(char *s, char b, unsigned int n);
 char *new_get_line(void);
 char *_memcpy(char *dest, char *src, unsigned int n);
@@ -52,6 +52,8 @@ int _isdigit(char *str);
 int _append(const char *filename, char *text_content);
 int _putchar(char c);
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
+void sec_handler(int sig_num);
+void execute_env();
 
 extern char **environ;
 
