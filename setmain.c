@@ -98,23 +98,31 @@ int main(int argc, char** argv, char **env)
 				rec_a = _atoi(argv[1]);
 				if (rec_a >= 0 && _isdigit(argv[1]))
 				{
+					free(command_cpy);
+					free(argv);
+					exit(rec_a);
 					
-					exit (_atoi(argv[1]));
 				}
 
-					_dprintf(2, "./hsh: %d: %s: Illegal number: %s\n", argc, argv[1]);
-					exit(2);
+				_dprintf(2, "./hsh: %d: %s: Illegal number: %s\n", argc, argv[1]);
+				free(command_cpy);
+				free(argv[1]);
+				free(argv);
+				exit(2);
 				
 			}
 
-
 			if (argc == 1)
 			{
+				free(command_cpy);
+				free(argv);
 				exit(0);
 			}
 			else
-
-				continue;
+			{
+				free(command_cpy);
+				free(argv);
+			}
 		
 		}
 
@@ -221,8 +229,7 @@ int main(int argc, char** argv, char **env)
 
 				if (errno == ENOENT)
 				{
-					_dprintf(2, "./hsh: %d: %s: not found\n", argc, argv[0]);
-					exit(127);						
+					_dprintf(2, "./hsh: %d: %s: not found\n", argc, argv[0]);					
 				}
         
 			}
@@ -235,14 +242,17 @@ int main(int argc, char** argv, char **env)
 
 			wait(NULL);
 		
-			
-				(void)(fd);
+			if (!isatty(fd))
+			{
+				
 				free(command_cpy);
 				free(command_path);
 				command_path = NULL;
 				free(argv);
 				argv = NULL;
 				sigint_handler(0);
+			
+			}
 			
                        
 		}
