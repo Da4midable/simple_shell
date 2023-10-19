@@ -20,6 +20,7 @@
 #define CHUNK_SIZE 128
 #define UNUSED(x) (void)(x)
 
+void rep_com(char *buf);
 void _unsetenv(const char *name);
 int _putenv(char *str);
 char *_strchr(char *s, char c);

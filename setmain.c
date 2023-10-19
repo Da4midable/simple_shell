@@ -8,7 +8,7 @@
 int main(int argc, char** argv, char **env)
 {
 	char *command = NULL, *command_cpy = NULL, *command_path = NULL, *tokenized = NULL, *env_tok = NULL, **env_var;
-	char *delim = " \n", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL;
+	char *delim = " \n", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL, *cwd, *old = "OLDPWD";
 	size_t buff_size = 0;
 	ssize_t n_read = 0;
 	int i = 0, fd = STDIN_FILENO, rec_a;
@@ -101,15 +101,9 @@ int main(int argc, char** argv, char **env)
 					free(command_cpy);
 					free(argv);
 					exit(rec_a);
-					
 				}
-
-				_dprintf(2, "./hsh: %d: %s: Illegal number: %s\n", argc, argv[1]);
-				free(command_cpy);
-				free(argv[1]);
-				free(argv);
+				_dprintf(2, "./hsh: 1: %s: Illegal number\n", argc, argv[1]);
 				exit(2);
-				
 			}
 
 			if (argc == 1)
@@ -120,50 +114,37 @@ int main(int argc, char** argv, char **env)
 			}
 			else
 			{
+				
 				free(command_cpy);
 				free(argv);
+				exit(2);
+				
 			}
 		
 		}
 
 		else if (_strcmp(argv[0], "setenv") == 0)
 		{
-            if (argc != 3) 
-			{
-                _dprintf(2, "Usage: %s %s %s\n", argv[0], argv[1], argv[2]);
-            } 
-			else 
-			{
-                _setenv(argv[1], argv[2]);
-            }
-				return(0);
+            if (argc > 2 && argv[1] && argv[2])
+				{
+					_setenv(argv[1], argv[2]);
+				}
+
+				free(command_cpy);
+				free(argv);
         }
 
 
 		else if (_strcmp(argv[0], "unsetenv") == 0)
 		{
-  			if (argc != 2)
-   			{
-       			_dprintf(2, "Usage: %s %s\n", argv[0], argv[1]);
-    		}
+			if (argc == 2 && argv[1])
+			{
+				_unsetenv(argv[1]);
+			}
+				
+				free(command_cpy);
+				free(argv);
 
-    		else
-    		{
-       			size_t var_name_len = strlen(argv[1]);
-        		int i;
-        		for (i = 0; environ[i] != NULL; i++)
-        		{
-            		if (set_strncmp(environ[i], argv[1], var_name_len) == 0 && environ[i][var_name_len] == '=')
-            		{
-                		while (environ[i] != NULL)
-                		{
-                   			environ[i] = environ[i + 1];
-                    		i++;
-                		}
-                		break;
-            		}
-        		}
-    		}
 		}
 
 		else if (_strcmp(argv[0], "cd") == 0)
@@ -174,9 +155,18 @@ int main(int argc, char** argv, char **env)
 				env_tok = _strtok(new_dir, "=");
 				argv[1] = env_tok;
 				argv[2] = _strtok(NULL, "=");
-				getcwd(buffer, BUFF_SIZE);
-				_setenv("OLDPWD", buffer);
+				if (argv[1] && argv[2])
+				{
+					cwd = getcwd(buffer, BUFF_SIZE);
+					if (cwd)
+					{
+						_setenv(old, buffer);
+					}
+				}
 				chdir(argv[2]);
+				free(env_tok);
+				free(command_cpy);
+				free(argv);
 			}
 
 			else if (_strcmp(argv[1], "-") == 0)
@@ -188,6 +178,10 @@ int main(int argc, char** argv, char **env)
 				getcwd(buffer, BUFF_SIZE);
 				_setenv("OLDPWD", buffer);
 				chdir(argv[2]);
+				free(env_tok2);
+				free(command_cpy);
+				free(argv);
+				
 			}
 
 			else if (argv[1])
@@ -196,13 +190,19 @@ int main(int argc, char** argv, char **env)
 				getcwd(buffer, BUFF_SIZE);
 				_setenv("OLDPWD", buffer);
 				chdir(argv[1]);
-
+				
 			}
 
 			else
 			{
 				;
 			}
+	
+		}
+
+		else if (_strcmp(*argv, "#") == 0)
+		{
+			rep_com(*(argv));
 		}
 
 		else if (_strcmp(command_cpy, "env") == 0)
@@ -214,15 +214,14 @@ int main(int argc, char** argv, char **env)
     		}
 			free(command_cpy);
 			free(argv);
-			return(0);
 		}
 
 		else if (fork() == 0)
 		{
 			command_path = locate(argv[0]);
 
-			execve (command_path, argv, NULL);
-			if (execve (argv[0], argv, NULL) == -1)
+			execve (command_path, argv, environ);
+			if (execve (argv[0], argv, environ) == -1)
 			{
 				if (errno == EACCES)
 				exit(126);
