@@ -7,9 +7,9 @@
 
 int main(int argc, char** argv, char **env)
 {
-	char *command = NULL, *command_cpy = NULL, *command_path = NULL, *tokenized = NULL, *env_tok = NULL, **env_var;
+	char *command = NULL, *command_cpy = NULL, *command_path = NULL, *tokenized = NULL, *env_tok = NULL, **env_var, *var_name, *var_value;
 	char *delim = " \n", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL, *cwd, *old = "OLDPWD";
-	size_t buff_size = 0;
+	size_t buff_size = 0, var_name_len;
 	ssize_t n_read = 0;
 	int i = 0, fd = STDIN_FILENO, rec_a;
 
@@ -18,7 +18,23 @@ int main(int argc, char** argv, char **env)
 
 	while (1)
 	{
-		n_read = get_line(&command, &buff_size, stdin);
+
+        if (isatty(fd))
+		{
+        
+            n_read = get_line(&command, &buff_size, stdin);
+        } 
+		else 
+		{
+        
+            n_read = read(STDIN_FILENO, buffer, sizeof(buffer));
+            if (n_read == -1)
+			{
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
+            command = strndup(buffer, n_read);
+        }
 
 		if (!command)
 		{
@@ -126,10 +142,29 @@ int main(int argc, char** argv, char **env)
 		else if (_strcmp(argv[0], "setenv") == 0)
 		{
             if (argc > 2 && argv[1] && argv[2])
-				{
-					_setenv(argv[1], argv[2]);
-				}
+			{	
+				var_name_len = strlen(argv[1]);
+                var_name = malloc(var_name_len + 1);
+                var_value = malloc(strlen(argv[2]) + 1);
 
+                custom_concat(var_name, argv[1], "=");
+                custom_concat(var_name, var_name, argv[2]);
+
+                for (i = 0; env[i] != NULL; i++) {
+                    if (strncmp(env[i], argv[1], var_name_len) == 0) {
+                        free(env[i]);
+                        env[i] = var_name;
+                        env[i + 1] = var_value;
+                        break;
+                    }
+                }
+
+                if (env[i] == NULL) {
+                    env[i] = var_name;
+                    env[i + 1] = var_value;
+                    env[i + 2] = NULL;
+                }
+			}
 				free(command_cpy);
 				free(argv);
         }
