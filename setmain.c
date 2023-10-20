@@ -100,6 +100,9 @@ int main(int ac, char **av, char **env)
 				}
 
 			}
+			free(command_cpy);
+			free(command);
+			free(argv);
 				return (0);
 		}
 
@@ -269,7 +272,7 @@ int main(int ac, char **av, char **env)
 			(void)(ac);
 			(void)(fd);
 		}
-
+		
 }
 
 

@@ -51,8 +51,7 @@ int fork_exec(char **argv)
 
 	else
 	{
-		_dprintf(2, "./hsh: 1: %s: not found\n", argv[0]);
-		exit(127);
+		;
 	}
 		return (0);
 }
