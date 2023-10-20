@@ -5,7 +5,7 @@
 * Return: zero
 */
 
-int main(int ac, char **av, char **env)
+int process_interactive()
 {
 	char *command = NULL, **argv, *command_cpy = NULL, *tokenized = NULL, *env_tok = NULL, **env_var, *var_name1, *var_name2;
 	char *delim = " \n", buffer[BUFF_SIZE], *new_dir = NULL, *goback_dir = NULL, *env_tok2 = NULL, *cwd, *old = "OLDPWD";
@@ -17,8 +17,6 @@ int main(int ac, char **av, char **env)
 	
 	signal(SIGINT, sigint_handler);
 
-	if (isatty(fd))
-	{
 	while (1)
 	{
              
@@ -135,7 +133,7 @@ int main(int ac, char **av, char **env)
 				argv++;
 				var_name2 = *argv;
 
-				_setenv(var_name1, var_name2, env);
+				_setenv(var_name1, var_name2, environ);
 				
 			}
 
@@ -160,7 +158,7 @@ int main(int ac, char **av, char **env)
 
 		}
 
-		else if ((_strcmp(argv[0], "cd") == 0) || (_strcmp(*av, "cd") == 0))
+		else if (_strcmp(argv[0], "cd") == 0)
 		{
 			if (!(argv[1]))
 			{
@@ -173,7 +171,7 @@ int main(int ac, char **av, char **env)
 					cwd = getcwd(buffer, BUFF_SIZE);
 					if (cwd)
 					{
-						_setenv(old, buffer, env);
+						_setenv(old, buffer, environ);
 					}
 				}
 				chdir(argv[2]);
@@ -188,7 +186,7 @@ int main(int ac, char **av, char **env)
 				argv[1] = env_tok2;
 				argv[2] = _strtok(NULL, "=");
 				getcwd(buffer, BUFF_SIZE);
-				_setenv("OLDPWD", buffer, env);
+				_setenv("OLDPWD", buffer, environ);
 				chdir(argv[2]);
 				free(env_tok2);
 				free(argv);
@@ -199,7 +197,7 @@ int main(int ac, char **av, char **env)
 			{
 
 				getcwd(buffer, BUFF_SIZE);
-				_setenv("OLDPWD", buffer, env);
+				_setenv("OLDPWD", buffer, environ);
 				chdir(argv[1]);
 				
 			}
@@ -215,76 +213,19 @@ int main(int ac, char **av, char **env)
 		else if (_strcmp(command_cpy, "env") == 0)
 		{
 
-			for (env_var = env; *env_var; env_var++)
+			for (env_var = environ; *env_var; env_var++)
 			{
        			_dprintf(1,"%s\n", *env_var);
     		}
-			free(command_cpy);
 			free(argv);
 		}
 
 		else 
 		{
 			(void)(cmd);
-			(void)(ac);
 			(void)(fd);
 			fork_exec(argv);
 		}
 			free(command_cpy);	
 	}
-}
-
-else
-
-{
-	if (_strcmp(av[1], "cd") == 0)
-	{
-			if (!(av[2]))
-			{
-				new_dir = _getenv("HOME");
-				env_tok = _strtok(new_dir, "=");
-				av[2] = env_tok;
-				av[3] = _strtok(NULL, "=");
-				if (av[2] && av[3])
-				{
-					cwd = getcwd(buffer, BUFF_SIZE);
-					if (cwd)
-					{
-						_setenv(old, buffer, env);
-					}
-				}
-				chdir(av[3]);
-				free(env_tok);
-			}
-
-			else if (_strcmp(av[2], "-") == 0)
-			{
-				goback_dir = _getenv("OLDPWD");
-				env_tok2 = _strtok(goback_dir, "=");
-				av[2] = env_tok2;
-				av[3] = _strtok(NULL, "=");
-				getcwd(buffer, BUFF_SIZE);
-				_setenv("OLDPWD", buffer, env);
-				chdir(av[3]);
-				free(env_tok2);				
-			}
-
-			else if (av[2])
-			{
-
-				getcwd(buffer, BUFF_SIZE);
-				_setenv("OLDPWD", buffer, env);
-				chdir(av[2]);
-				
-			}
-
-			else
-			{
-				;
-			}
-	
-		}
-
-}
-		return (0);
 }

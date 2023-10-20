@@ -1,80 +1,87 @@
 #include "main.h"
 
+/**
+* _dprintf - prints error message
+* @fd: file descriptor
+* @format: format specifier
+* Return: NULL
+*/
+
 int _dprintf(int fd, const char *format, ...)
 {
-    va_list args;
-    char *str;
-    const char *c = format;
-    int written = 0, num, temp, num_digits, i, len;
-    char buf[12];
+	va_list args;
+	char *str;
+	const char *c = format;
+	int written = 0, num, temp, num_digits, i, len;
+	char buf[12];
 
-    va_start(args, format);
+	va_start(args, format);
 
-    while (*c != '\0')
-    {
-        if (*c == '%')
-        {
-            switch (*(c + 1))
-            {
-                case 'd':
-                {
-                    num = va_arg(args, int);
+	while (*c != '\0')
+	{
+		if (*c == '%')
+		{
+			switch (*(c + 1))
+			{
+				case 'd':
+				{
+					num = va_arg(args, int);
 
-                   
-                    if (num < 0)
-                    {
-                        written += write(fd, "-", 1);
-                        num = -num;
-                    }
 
-                    temp = num;
-                    num_digits = 1;
-                    while (temp >= 10)
-                    {
-                        temp /= 10;
-                        num_digits++;
-                    }
+					if (num < 0)
+					{
+						written += write(fd, "-", 1);
+						num = -num;
+					}
 
-                    buf[num_digits] = buf[num_digits + 1];
-                    buf[num_digits] = '\0';
+					temp = num;
+					num_digits = 1;
+					while (temp >= 10)
+					{
+						temp /= 10;
+						num_digits++;
+					}
 
-                    for (i = num_digits - 1; i >= 0; i--)
-                    {
-                        buf[i] = '0' + (num % 10);
-                        num /= 10;
-                    }
+					buf[num_digits] = buf[num_digits + 1];
+					buf[num_digits] = '\0';
 
-                    written += write(fd, buf, num_digits);
-                    c++;
-                    break;
-                }
-                case 's':
-                {
-                    str = va_arg(args, char*);
-                    len = 0;
-                    while (str[len] != '\0')
-                    {
-                        len++;
-                    }
-                    written += write(fd, str, len);
-                    c++;
-                    break;
-                }
+					for (i = num_digits - 1; i >= 0; i--)
+					{
+						buf[i] = '0' + (num % 10);
+						num /= 10;
+					}
 
-                default:
-                    written += write(fd, c, 1);
-                    break;
-            }
-        }
-        else
-        {
-            written += write(fd, c, 1);
-        }
+					written += write(fd, buf, num_digits);
+					c++;
+					break;
+				}
+				case 's':
+				{
+					str = va_arg(args, char*);
+					len = 0;
+					while (str[len] != '\0')
+					{
+						len++;
+					}
+					written += write(fd, str, len);
+					c++;
+					break;
+				}
 
-        c++;
-    }
+				default:
+					written += write(fd, c, 1);
+					break;
+			}
+		}
+		else
+		{
+			written += write(fd, c, 1);
+		}
 
-    va_end(args);
+		c++;
+	}
 
-    return written;
+	va_end(args);
+
+	return (written);
 }

@@ -1,5 +1,15 @@
 #include "main.h"
 
+/**
+ * get_line - Read a line of input from a file stream.
+ *
+ * @lineptr: Pointer to the buffer where the line will be stored.
+ * @n: Pointer to the size of the buffer. Will be updated if more space is needed.
+ * @stream: The file stream to read from.
+ *
+ * Return: Number of characters read, including the newline character.
+ *         -1 on failure or end-of-file.
+ */
 
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream)
 {

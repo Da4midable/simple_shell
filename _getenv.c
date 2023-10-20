@@ -26,9 +26,9 @@ char *_getenv(const char *name)
 			return (dup_env);
 			free(dup_env);
 		}
-	
+
 		i++;
 	}
-	
+
 	return (NULL);
 }

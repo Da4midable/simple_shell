@@ -22,13 +22,16 @@
 
 void rep_com(char *buf);
 void _unsetenv(const char *name);
-int _putenv(char *str);
+
+int process_interactive();
+int fork_exec(char **argv);
+int _putenv(char *str, char** env);
 char *_strchr(char *s, char c);
 char *_strcpy(char *dest, const char *src);
 char *_strcat(char *dest, const char *src);
 void sigint_handler(int sig_num);
 int set_strncmp(const char *s1, const char *s2, size_t n);
-int _setenv(const char *name, const char *value);
+int _setenv(const char *name, const char *value, char **env);
 void custom_concat(char* dest, const char* str1, const char* str2);
 int _dprintf(int fd, const char *format, ...);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);

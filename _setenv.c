@@ -1,25 +1,34 @@
 #include "main.h"
 
-int _setenv(const char *name, const char *value)
+
+/**
+ * _setenv - sets argv[1] to argv[2] in environment
+ * @name: argv[1]
+ * @value: argv[1]
+ * @env: environment variable
+ * Return: 0
+ */
+
+int _setenv(const char *name, const char *value, char **env)
 {
-    char *env_var;
-    size_t len = _strlen(name) + _strlen(value) + 2;
+	char *env_var;
+	size_t len = _strlen(name) + _strlen(value) + 2;
 
-    env_var = malloc(len);
-    if (!env_var)
+	env_var = malloc(len);
+	if (!env_var)
 	{
-        return -1;
-    }
+		return (-1);
+	}
 
-    _strcpy(env_var, name);
-    _strcat(env_var, "=");
-    _strcat(env_var, value);
+	_strcpy(env_var, name);
+	_strcat(env_var, "=");
+	_strcat(env_var, value);
 
-    if (_putenv(env_var) != 0)
+	if (_putenv(env_var, env) != 0)
 	{
-        free(env_var);
-        return -1;
-    }
+		free(env_var);
+		return (-1);
+	}
 
-    return 0;
+	return (0);
 }
