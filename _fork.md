@@ -1,7 +1,7 @@
 #include "main.h"
 
 
-void fork_exec(char **argv)
+int fork_exec(char **argv)
 {
 
 	char *command_path;
@@ -12,7 +12,7 @@ void fork_exec(char **argv)
 	if (child_pid == -1)
 	{
 		perror("Error:");
-		return;
+		return (-1);
 	}
 
 	if (child_pid == 0)
@@ -33,16 +33,16 @@ void fork_exec(char **argv)
         
     }
 			
-
 	else
 	{
 
 		wait(&status);
 
-        if (WIFEXITED(status))
-        {
+			_dprintf(2, "./hsh: 1: %s: not found\n", argv[0]);
+				exit(127);
 			(void)(exit_status);
-        }
+        
                        
 	}
+		return (0);
 }

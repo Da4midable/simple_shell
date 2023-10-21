@@ -84,7 +84,7 @@ int main(int ac, char **av, char **env)
 			take_ovlp = _strstr(take_ovlp, cmd);
 		}
 
-		if (_strstr(command_cpy, cmd))
+		if (_strstr(command_cpy, cmd) && (_strcmp(command_cpy, cmd) == 0))
 		{
 			for (i = 0; i < count; i++)
 			{
@@ -258,21 +258,32 @@ int main(int ac, char **av, char **env)
 			free(argv);
 		}
 
-		else if (_strcmp(*argv, "ls") == 0 || _strstr(cmd, "ls"))
+		else
 		{
+			fork_exec(argv, argv[0]);
+			if (ac == 2)
+				{
+					fd = open(av[1], O_RDONLY);
+					if (fd == -1)
+					{
+						if (errno == EACCES)
+							exit(126);
+						if (errno == ENOENT)
+						{
+							exit(127);
+						}
+						return (EXIT_FAILURE);
+					}
+				}
 
-			fork_exec(argv);
 			free(command_cpy);
 			free(argv);
 			return (0);
-		}
-
-		else
-		{
 			(void)(ac);
 			(void)(fd);
+			sigint_handler(0);
 		}
-		
+
 }
 
 

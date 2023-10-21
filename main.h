@@ -24,7 +24,7 @@ void rep_com(char *buf);
 void _unsetenv(const char *name);
 
 int process_interactive();
-int fork_exec(char **argv);
+int fork_exec(char **argv, char *ags);
 int _putenv(char *str, char** env);
 char *_strchr(char *s, char c);
 char *_strcpy(char *dest, const char *src);
